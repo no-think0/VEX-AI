@@ -70,14 +70,15 @@ dashboardJetson( int ox, int oy, int width, int height ) {
                            (local_map.boxobj[i].height), //in pixels
                            (local_map.boxobj[i].classID), //Class ID (0 = Red 1 = Blue 2 = Goal)                           
                            (local_map.boxobj[i].prob)); //percent likely to be in this catagory
-      FILE *fp = fopen("/dev/serial2","wb");
+      // FILE *fp = fopen("/dev/serial2","wb");
+      // fprintf(fp, "%.0f\n",(180 + local_map.pos.az*180/3.1415));
       // fprintf(fp, "box x:%ld y:%ld w:%ld h:%ld c:%ld d:%f prob:%f \n", local_map.boxobj[0].x, local_map.boxobj[0].y, local_map.boxobj[0].width, local_map.boxobj[0].height, local_map.boxobj[0].classID, local_map.boxobj[0].depth, local_map.boxobj[0].prob);
       // fprintf(fp, "%ld, %ld, (%f, %f, %f), (%f, %f, %f) \n", local_map.pos.framecnt, local_map.pos.status, local_map.pos.x, local_map.pos.y, local_map.pos.z, 180-fabs(local_map.pos.az*180/3.1415), local_map.pos.el*180/3.1415, local_map.pos.rot*180/3.1415);
-      fprintf(fp, "mm: (%f, %f), %f \n", local_map.pos.x, local_map.pos.y, 180-fabs(local_map.pos.az*180/3.1415));
-      fprintf(fp, "inch: (%f, %f), %f \n", local_map.pos.x/-25.4, local_map.pos.y/-25.4, 180-fabs(local_map.pos.az*180/3.1415));
+      // fprintf(fp, "mm: (%f, %f), %f \n", local_map.pos.x, local_map.pos.y, 180-fabs(local_map.pos.az*180/3.1415));
+      // fprintf(fp, "inch: (%f, %f), %f \n", local_map.pos.x/-25.4, local_map.pos.y/-25.4, 180-fabs(local_map.pos.az*180/3.1415));
       // fprintf(fp, "%ld, %ld, (%f, %f, %f) \n",local_map.mapobj[0].age, local_map.mapobj[0].classID, local_map.mapobj[0].positionX, local_map.mapobj[0].positionY, local_map.mapobj[0].positionZ);
-      fprintf(fp, "b-mm: (%f, %f) \n",local_map.mapobj[0].positionX, local_map.mapobj[0].positionY);
-      fprintf(fp, "b-inch: (%f, %f) \n",local_map.mapobj[0].positionX/-25.4*0.79, local_map.mapobj[0].positionY/-25.4*0.79);
+      // fprintf(fp, "b-mm: (%f, %f) \n",local_map.mapobj[0].positionX, local_map.mapobj[0].positionY);
+      // fprintf(fp, "b-inch: (%f, %f) \n",local_map.mapobj[0].positionX/-25.4*0.79, local_map.mapobj[0].positionY/-25.4*0.79);
     }
     else {
       Brain.Screen.printAt( ox + 10, oy += 12, "---");

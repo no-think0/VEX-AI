@@ -120,37 +120,132 @@ motor intake_fwd = motor(PORT12, ratio18_1, false);
 // local storage for latest data from the Jetson Nano
 static MAP_RECORD       local_map;
 
+bool move = false;
+bool find = false;
+bool score = false;
+
+int NRx = 44*25.4;
+int NRy = 44*25.4;
+int NRd = 35;
+
 void Move(){
+  FILE *fp = fopen("/dev/serial2","wb");
   while(true){
+    wait(10,msec);
+
     // drive_left.spin(forward, Controller1.Axis3.value(), percent);
     // drive_right.spin(forward, Controller1.Axis2.value(), percent);
 
-    arm.spin(forward, (Controller1.ButtonL1.pressing() - Controller1.ButtonL2.pressing())*80, percent);
+    // arm.spin(forward, (Controller1.ButtonL1.pressing() - Controller1.ButtonL2.pressing())*80, percent);
         
-    intake_fwd.spin(forward, (Controller1.ButtonR1.pressing() - Controller1.ButtonR2.pressing())*80, percent);
+    // intake_fwd.spin(forward, (Controller1.ButtonR1.pressing() - Controller1.ButtonR2.pressing())*80, percent);
+    
 
-    if(local_map.boxobj[0].x > 0 && local_map.boxobj[0].x < 320 && local_map.boxobj[0].classID == 1){
-      if(local_map.boxobj[0].x < 110){
+    if(score){
+      score = false;
+      while((180 + local_map.pos.az*180/3.1415) > 90){
+        drive_right.spin(forward, 5, percent);
+        drive_left.spin(reverse, 5, percent);
+        // fprintf(fp, "%.0f\n",(180 + local_map.pos.az*180/3.1415));
+      }
+
+      drive_right.spin(forward, 0, percent);
+      drive_left.spin(forward, 0, percent);
+
+      wait(1,sec);
+
+
+      while(-1*local_map.pos.x < NRx){
         drive_right.spin(forward, 10, percent);
-        drive_left.spin(reverse, 10, percent);
-      }else if( local_map.boxobj[0].x > 210){
         drive_left.spin(forward, 10, percent);
-        drive_right.spin(reverse, 10, percent);
-      }else{
-        drive_left.spin(forward, 0, percent);
-        drive_right.spin(reverse, 0, percent);
+        fprintf(fp, "%f, %d\n",local_map.pos.x, NRx);
       }
 
-      if(local_map.boxobj[0].depth > 200){
-        drive_right.spin(forward, 40, percent);
-        drive_left.spin(forward, 40, percent);
-      }else if(local_map.boxobj[0].depth < 200){
-        drive_right.spin(reverse, 40, percent);
-        drive_left.spin(reverse, 40, percent);
-      }else{
-        drive_left.spin(forward, 0, percent);
-        drive_right.spin(reverse, 0, percent);
+      
+
+      drive_right.spin(forward, 0, percent);
+      drive_left.spin(forward, 0, percent);
+
+      wait(1,sec);
+
+      while((180 + local_map.pos.az*180/3.1415) > 10){
+        drive_right.spin(forward, 5, percent);
+        drive_left.spin(reverse, 5, percent);
       }
+
+      drive_right.spin(forward, 0, percent);
+      drive_left.spin(forward, 0, percent);
+
+      wait(1,sec);
+      
+
+      while(-1*local_map.pos.y < NRy){
+        fprintf(fp, "%f, %d\n",local_map.pos.y, NRy);
+        drive_right.spin(forward, 10, percent);
+        drive_left.spin(forward, 10, percent);
+      }
+
+      drive_right.spin(forward, 0, percent);
+      drive_left.spin(forward, 0, percent);
+
+      wait(1,sec);
+
+      while((180 + local_map.pos.az*180/3.1415) > NRd){
+        drive_right.spin(forward, 5, percent);
+        drive_left.spin(reverse, 5, percent);
+      }
+
+      drive_right.spin(forward, 0, percent);
+      drive_left.spin(forward, 0, percent);
+
+    }
+    
+
+
+    if(local_map.boxobj[0].classID == 1){
+      find = true;
+    }else if(RangeFinderA.distance(mm) > 70 && RangeFinderA.distance(mm) < 600){
+      find = false;
+
+      intake_fwd.spin(forward, 100, percent);
+
+      drive_right.spin(forward, 10, percent);
+      drive_left.spin(forward, 10, percent);
+
+    }else{
+      find = false;
+      intake_fwd.spin(forward, 0, percent);
+      drive_right.spin(forward, 0, percent);
+      drive_left.spin(reverse, 0, percent);
+      // score = true;
+    }
+
+    if(find){
+      if(local_map.boxobj[0].x < 120){
+        drive_right.spin(forward, 5, percent);
+        drive_left.spin(reverse, 5, percent);
+        move = false;
+      }else if(local_map.boxobj[0].x > 200){
+        drive_left.spin(forward, 5, percent);
+        drive_right.spin(reverse, 5, percent);
+        move = false;
+      }else{
+        move = true;
+      }
+
+      if(move){
+        if(local_map.boxobj[0].depth > 200){
+          drive_right.spin(forward, 40, percent);
+          drive_left.spin(forward, 40, percent);
+        }else if(local_map.boxobj[0].depth < 200){
+          drive_right.spin(reverse, 40, percent);
+          drive_left.spin(reverse, 40, percent);
+        }else{
+          drive_left.spin(forward, 0, percent);
+          drive_right.spin(reverse, 0, percent);
+        }
+      }
+
     }
   }
 }

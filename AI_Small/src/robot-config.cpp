@@ -5,6 +5,8 @@ using namespace vex;
 // A global instance of brain used for printing to the V5 brain screen
 brain Brain;
 
+sonar RangeFinderA = sonar(Brain.ThreeWirePort.C);
+
 // // VEXcode generated functions
 // // define variable for remote controller enable/disable
 // bool RemoteControlCodeEnabled = true;
